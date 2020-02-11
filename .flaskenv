@@ -1,0 +1,2 @@
+FLASK_APP=scrawl
+FLASK_ENV=development
