@@ -61,7 +61,11 @@ def create_page():
     page_name = request.form['page_name']
     work_directory = current_app.config['PAGES_PATH']
 
-    pages_utils.create_page(page_name=page_name, work_directory=work_directory)
+    status = pages_utils.create_page(page_name=page_name, work_directory=work_directory)
+
+    message = 'The page was created successfully' if status else 'The page with this name already exists'
+
+    print(message)
 
     return redirect(url_for('pages.render_page', page_name=page_name))
 
@@ -72,10 +76,11 @@ def create_sub_page():
     # http://lucumr.pocoo.org/2010/12/24/common-mistakes-as-web-developer/
     page_name = request.form['page_name']
     sub_page_name = request.form['sub_page_name']
+    new_sub_page_name = request.form['new_sub_page_name']
     work_directory = current_app.config['PAGES_PATH']
 
     status = pages_utils.create_sub_page(page_name=page_name, sub_page_name=sub_page_name,
-                                         work_directory=work_directory)
+                                         new_sub_page_name=new_sub_page_name, work_directory=work_directory)
 
     if not status:
         return redirect(url_for('pages.index'))  # If there is no page redirect to the main page
@@ -98,7 +103,11 @@ def rename_page():
     if not status:
         return redirect(url_for('pages.index'))  # If there is no page redirect to the main page
 
-    return redirect(url_for('pages.render_page', page_name='%s/%s' % (page_name, new_page_name)))
+    new_url = new_page_name
+    if sub_page_name:
+        new_url = '%s/%s' % (page_name, new_page_name)
+
+    return redirect(url_for('pages.render_page', page_name=new_url))
 
 
 @bp.route('/delete_page', methods=['POST'])

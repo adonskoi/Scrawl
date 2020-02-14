@@ -25,12 +25,12 @@
         {% for pagename in pages %}
             {% if pagename == current_page %}
                 <li><a oncontextmenu="addition_context_menu(this)" data-page="{{ pagename }}"
-                       href="/pages/{{ pagename }}">► {{ pagename }}</a>
+                       href="/pages/{{ pagename }}">{% if current_sub_page %}▼{% else %}►{% endif%} {{ pagename }}</a>
                     {% for sub_name in sub_pages %}
                         <li><a oncontextmenu="addition_context_menu(this)" data-page="{{ pagename }}"
                                data-subpage="{{ sub_name }}" class="sub-page" oncontextmenu="alert('OKAAY')"
                                href="/pages/{{ pagename }}/{{ sub_name }}">
-                            {% if sub_name == current_sub_page %}•{% else %}○{% endif %} {{ sub_name }}</a></li>
+                            {% if sub_name == current_sub_page %}► {% endif %} {{ sub_name }}</a></li>
                     {% endfor %}
                 </li>
             {% else %}
@@ -42,20 +42,20 @@
     <br>
 </div>
 
-<div class="tab">
-    <a {% if current_sub_page == "" %} class="current-sub-page" {% endif %}
-                                       oncontextmenu="addition_context_menu(this)"
-                                       data-page="{{ current_page }}"
-                                       href="/pages/{{ current_page }}"
-                                       style="font-weight: bold">{{ current_page }}</a>
-    {% for sub_name in sub_pages %}
-        <a {% if sub_name == current_sub_page %} class="current-sub-page" {% endif %}
-                                                 oncontextmenu="addition_context_menu(this)"
-                                                 data-page="{{ current_page }}"
-                                                 data-subpage="{{ sub_name }}"
-                                                 href="/pages/{{ current_page }}/{{ sub_name }}">{{ sub_name }}</a>
-    {% endfor %}
-</div>
+<!--<div class="tab">-->
+<!--    <a {% if current_sub_page == "" %} class="current-sub-page" {% endif %}-->
+<!--                                       oncontextmenu="addition_context_menu(this)"-->
+<!--                                       data-page="{{ current_page }}"-->
+<!--                                       href="/pages/{{ current_page }}"-->
+<!--                                       style="font-weight: bold">{{ current_page }}</a>-->
+<!--    {% for sub_name in sub_pages %}-->
+<!--        <a {% if sub_name == current_sub_page %} class="current-sub-page" {% endif %}-->
+<!--                                                 oncontextmenu="addition_context_menu(this)"-->
+<!--                                                 data-page="{{ current_page }}"-->
+<!--                                                 data-subpage="{{ sub_name }}"-->
+<!--                                                 href="/pages/{{ current_page }}/{{ sub_name }}">{{ sub_name }}</a>-->
+<!--    {% endfor %}-->
+<!--</div>-->
 
 <section class="main">
     {% if content %}
@@ -138,8 +138,9 @@
             let page_name = prompt("Please enter new page name:");
 
             if (page_name) {
-                alert('The page was created successfully');
+                // alert('The page was created successfully');
                 let form = document.createElement('form');
+                form.style.display = 'none';
                 form.action = '{{ url_for('pages.create_page') }}';
                 form.method = 'POST';
                 form.innerHTML = `<input name="page_name" value="${page_name}">`;
@@ -147,7 +148,7 @@
                 form.submit();
 
             } else {
-                alert('The creation of the page is canceled')
+                // alert('The creation of the page is canceled')
             }
         });
     });
@@ -155,22 +156,26 @@
     /* Event for context menu new sub page */
     Array.from(document.getElementsByClassName('context-new-subpage')).forEach(element => {
         element.addEventListener("click", e => {
-            let sub_page_name = prompt("Please enter new sub page name:");
+            let new_sub_page_name = prompt("Please enter new sub page name:");
 
-            if (sub_page_name) {
+            if (new_sub_page_name) {
                 let page_name = addition_data.getAttribute('data-page');
+                let sub_page_name = addition_data.getAttribute('data-subpage');
+                if (!sub_page_name) sub_page_name = '';
 
-                alert('The page was created successfully');
+                // alert('The page was created successfully');
                 let form = document.createElement('form');
+                form.style.display = 'none';
                 form.action = '{{ url_for('pages.create_sub_page') }}';
                 form.method = 'POST';
                 form.innerHTML = `<input name="page_name" value="${page_name}">` +
-                    `<input name="sub_page_name" value="${sub_page_name}">`;
+                    `<input name="sub_page_name" value="${sub_page_name}">` +
+                    `<input name="new_sub_page_name" value="${new_sub_page_name}">`;
                 document.body.append(form);
                 form.submit();
 
             } else {
-                alert('The creation of the sub page is canceled')
+                // alert('The creation of the sub page is canceled')
             }
         });
     });
@@ -185,8 +190,9 @@
                 sub_page_name = '';
             }
 
-            alert('The page was deleted successfully');
+            // alert('The page was deleted successfully');
             let form = document.createElement('form');
+            form.style.display = 'none';
             form.action = '{{ url_for('pages.delete_page') }}';
             form.method = 'POST';
             form.innerHTML = `<input name="page_name" value="${page_name}">` +
@@ -199,19 +205,20 @@
     /* Event for context menu rename page */
     Array.from(document.getElementsByClassName('context-rename')).forEach(element => {
         element.addEventListener("click", e => {
-            let new_page_name = prompt("Please enter new page name:");
+            let page_name = addition_data.getAttribute('data-page');
+            let sub_page_name = addition_data.getAttribute('data-subpage');
+            if (!sub_page_name) sub_page_name = '';
+
+
+            let current_page = sub_page_name ? sub_page_name : page_name;
+
+            let new_page_name = prompt("Please enter new page name:", current_page);
 
             if (new_page_name) {
-                let page_name = addition_data.getAttribute('data-page');
-                let sub_page_name = addition_data.getAttribute('data-subpage');
-
-                if (!sub_page_name) {
-                    sub_page_name = '';
-                }
-
-                alert('The page was renamed successfully');
+                // alert('The page was renamed successfully');
                 let form = document.createElement('form');
-                form.action = '{{ url_for('pages.rename_page') }}';
+                form.style.display = 'none';
+                form.action = "{{ url_for('pages.rename_page') }}";
                 form.method = 'POST';
                 form.innerHTML = `<input name="page_name" value="${page_name}">` +
                     `<input name="sub_page_name" value="${sub_page_name}">` +
@@ -219,11 +226,10 @@
                 document.body.append(form);
                 form.submit();
             } else {
-                alert('Page renaming has been canceled')
+                // alert('Page renaming has been canceled')
             }
         });
     });
-
 </script>
 </body>
 </html>
