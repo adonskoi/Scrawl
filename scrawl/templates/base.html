@@ -23,20 +23,20 @@
     <h3 class="pages-title" onclick="window.location = '/'">Pages</h3>
     <ul id="navtree">
         {% for pagename in pages %}
-            {% if pagename == current_page %}
-                <li><a oncontextmenu="addition_context_menu(this)" data-page="{{ pagename }}"
-                       href="/pages/{{ pagename }}">{% if current_sub_page %}▼{% else %}►{% endif%} {{ pagename }}</a>
-                    {% for sub_name in sub_pages %}
-                        <li><a oncontextmenu="addition_context_menu(this)" data-page="{{ pagename }}"
-                               data-subpage="{{ sub_name }}" class="sub-page" oncontextmenu="alert('OKAAY')"
-                               href="/pages/{{ pagename }}/{{ sub_name }}">
-                            {% if sub_name == current_sub_page %}► {% endif %} {{ sub_name }}</a></li>
-                    {% endfor %}
-                </li>
-            {% else %}
-                <li><a oncontextmenu="addition_context_menu(this)" data-page="{{ pagename }}"
-                       href="/pages/{{ pagename }}">{{ pagename }}</a></li>
-            {% endif %}
+        {% if pagename == current_page %}
+        <li><a oncontextmenu="addition_context_menu(this)" data-page="{{ pagename }}"
+               href="/pages/{{ pagename }}">{% if current_sub_page %}▼{% else %}►{% endif%} {{ pagename }}</a>
+            {% for sub_name in sub_pages %}
+        <li><a oncontextmenu="addition_context_menu(this)" data-page="{{ pagename }}"
+               data-subpage="{{ sub_name }}" class="sub-page" oncontextmenu="alert('OKAAY')"
+               href="/pages/{{ pagename }}/{{ sub_name }}">
+            {% if sub_name == current_sub_page %}► {% endif %} {{ sub_name }}</a></li>
+        {% endfor %}
+        </li>
+        {% else %}
+        <li><a oncontextmenu="addition_context_menu(this)" data-page="{{ pagename }}"
+               href="/pages/{{ pagename }}">{% if pagename in pages_with_sub_pages %}►{% endif%} {{ pagename }}</a></li>
+        {% endif %}
         {% endfor %}
     </ul>
     <br>
@@ -59,17 +59,17 @@
 
 <section class="main">
     {% if content %}
-        <div id="editable" contenteditable="true">
-            {{ content | safe }}
-        </div>
-        <button type="save_btn" onclick="save_content(this);">Save</button>
+    <div id="editable" contenteditable="true">
+        {{ content | safe }}
+    </div>
+    <button type="save_btn" onclick="save_content(this);">Save</button>
     {% else %}
-        <div id="content">
-            Scrawl!
-        </div>
+    <div id="content">
+        Scrawl!
+    </div>
     {% endif %}
     {% for message in get_flashed_messages() %}
-        <div class="flash">{{ message }}</div>
+    <div class="flash">{{ message }}</div>
     {% endfor %}
 </section>
 
@@ -141,7 +141,7 @@
                 // alert('The page was created successfully');
                 let form = document.createElement('form');
                 form.style.display = 'none';
-                form.action = '{{ url_for('pages.create_page') }}';
+                form.action = "{{ url_for('pages.create_page') }}";
                 form.method = 'POST';
                 form.innerHTML = `<input name="page_name" value="${page_name}">`;
                 document.body.append(form);
@@ -166,7 +166,7 @@
                 // alert('The page was created successfully');
                 let form = document.createElement('form');
                 form.style.display = 'none';
-                form.action = '{{ url_for('pages.create_sub_page') }}';
+                form.action = "{{ url_for('pages.create_sub_page') }}";
                 form.method = 'POST';
                 form.innerHTML = `<input name="page_name" value="${page_name}">` +
                     `<input name="sub_page_name" value="${sub_page_name}">` +
@@ -193,7 +193,7 @@
             // alert('The page was deleted successfully');
             let form = document.createElement('form');
             form.style.display = 'none';
-            form.action = '{{ url_for('pages.delete_page') }}';
+            form.action = "{{ url_for('pages.delete_page') }}";
             form.method = 'POST';
             form.innerHTML = `<input name="page_name" value="${page_name}">` +
                 `<input name="sub_page_name" value="${sub_page_name}">`;

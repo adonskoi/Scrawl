@@ -42,6 +42,7 @@ def render_page(page_name):
 
     pages = pages_utils.get_pages(work_directory=work_directory)
     page = pages_utils.get_page(page_name=page_name, work_directory=work_directory)
+    pages_with_sub_pages = pages_utils.get_pages_info(work_directory=work_directory)
 
     if not page:
         return redirect(url_for('pages.index'))  # If there is no page redirect to the main page
@@ -50,7 +51,7 @@ def render_page(page_name):
 
     return render_template(
         'base.html', pages=pages, current_page=page_name, current_sub_page=sub_page_name,
-        content=page['content'], sub_pages=page['sub_pages']
+        content=page['content'], sub_pages=page['sub_pages'], pages_with_sub_pages=pages_with_sub_pages,
     )
 
 

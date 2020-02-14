@@ -71,6 +71,26 @@ def get_page(page_name: str, work_directory: str):
     return False
 
 
+def get_pages_info(work_directory: str):
+    pages = get_pages(work_directory=work_directory)
+
+    with_sub_pages = []
+
+    for name in pages:
+        page_directory = os.path.join(work_directory, name)
+
+        flag = False
+        for sub_page_name in os.listdir(page_directory):
+            if os.path.isdir(os.path.join(page_directory, sub_page_name)):
+                flag = True
+                break
+
+        if flag:
+            with_sub_pages.append(name)
+
+    return with_sub_pages
+
+
 def create_page(page_name: str, work_directory: str):
     directory_path = os.path.join(work_directory, page_name)
     page_path = safe_join(directory_path, 'content.html')
