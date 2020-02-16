@@ -123,6 +123,9 @@ def create_sub_page(page_name: str, sub_page_name: str, new_sub_page_name: str, 
     print(full_directory_path, full_file_path)
 
     if os.path.exists(page_directory_path):  # Checking for page existence
+        if os.path.exists(full_directory_path):
+            return True
+
         os.makedirs(full_directory_path)
 
         with open(full_file_path, 'a+', encoding='utf-8') as file:

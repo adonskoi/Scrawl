@@ -10,7 +10,8 @@ bp = Blueprint('pages', __name__)
 def index():
     work_directory = current_app.config['PAGES_PATH']
     pages = pages_utils.get_pages(work_directory=work_directory)
-    return render_template('base.html', pages=pages)
+    pages_with_sub_pages = pages_utils.get_pages_info(work_directory=work_directory)
+    return render_template('base.html', pages=pages, pages_with_sub_pages=pages_with_sub_pages)
 
 
 @bp.route('/pages/<path:page_name>', methods=('GET', 'POST'))
