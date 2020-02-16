@@ -1,7 +1,13 @@
+/* Delete default css properties */
+* {
+    margin: 0;
+    padding: 0;
+}
+
 /* The sidebar menu */
 .sidenav {
     height: 100%; /* Full-height: remove this if you want "auto" height */
-    width: 160px; /* Set the width of the sidebar */
+    width: 200px; /* Set the width of the sidebar */
     position: fixed; /* Fixed Sidebar (stay in place on scroll) */
     z-index: 1; /* Stay on top */
     top: 0; /* Stay at the top */
@@ -26,16 +32,25 @@
     /*color: #f1f1f1; */
 }
 
+[type="save_btn"] {
+    margin: 8px;
+}
+
 /* Style page content */
 .main {
-    margin-left: 160px; /* Same as the width of the sidebar */
-    padding: 0px 10px;
+    margin: 20px 0 0 200px; /* Same as the width of the sidebar */
+    padding: 0 10px;
 }
 
 /* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
 @media screen and (max-height: 450px) {
-    .sidenav {padding-top: 15px;}
-    .sidenav a {font-size: 18px;}
+    .sidenav {
+        padding-top: 15px;
+    }
+
+    .sidenav a {
+        font-size: 18px;
+    }
 }
 
 .flashed_msgs {
@@ -54,4 +69,84 @@ ul, #navtree {
 #navtree {
     margin: 0;
     padding-left: 5px;
+}
+
+[name="page_name"] {
+    max-width: 130px;
+}
+
+.sub-page {
+    margin-left: 30px;
+}
+
+/* Style the tab */
+.tab {
+    overflow: hidden;
+    border-bottom: 1px solid #ccc;
+    margin-left: 200px;
+    margin-bottom: 15px;
+}
+
+.tab a {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 17px;
+    padding: 7px 8px;
+    color: inherit;
+}
+
+.tab a:hover {
+    background-color: #ddd;
+}
+
+.tab a.active {
+    background-color: #ccc;
+}
+
+.current-sub-page {
+    background-color: #ccc !important;
+}
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
+.pages-title {
+    margin-left: 18px;
+    margin-bottom: 10px;
+}
+
+
+/* Style the context menu */
+.menu {
+    width: 150px;
+    box-shadow: 0 4px 5px 3px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    display: none;
+    background-color: white;
+    z-index: 999999;
+}
+
+.menu > .menu-options {
+    list-style: none;
+    font-weight: 500;
+    font-size: 14px;
+    padding: 10px 40px 10px 20px;
+    cursor: pointer;
+}
+
+.menu > .menu-options > .menu-option {
+    border-radius: 8px;
+    padding: 2px;
+}
+
+.menu > .menu-options > .menu-option:hover {
+    background: rgba(0, 0, 0, 0.2);
 }

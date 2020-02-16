@@ -12,7 +12,7 @@ cd scrawl
 pip3 install -r requirements.txt
 ```
 
-For testing start server with:
+For testing, start server with:
 ``` shell
 flask run
 ```
