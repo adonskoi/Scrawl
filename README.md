@@ -2,7 +2,9 @@
 Note-taking Software
 
 <p align="center">
-<a href="https://ibb.co/Nx7RkrW"><img src="https://i.ibb.co/y0V2Mpg/scrawl-v1.png" width="400"/></a>
+    <a href="https://ibb.co/NLxdJrz">
+       <img src="https://i.ibb.co/2jq1CSB/scrawl-v02.png" width="400"/>
+    </a>
 </p>
 
 Installation:
