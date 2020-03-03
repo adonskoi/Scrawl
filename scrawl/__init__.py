@@ -8,7 +8,7 @@ from .settings import BASE_DIR
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
-        PAGES_PATH=os.path.join(BASE_DIR, 'instance', 'example_notes'),  # todo: ask user for path
+        PAGES_PATH=os.path.join(BASE_DIR, 'instance', 'Pages'),  # todo: ask user for path
         DEFAULT_TEXT='<div id="content">\n Scrawl! \n</div>',
     )
 
