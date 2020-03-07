@@ -19,4 +19,4 @@ Start the server:
 flask run
 ```
 
-Visit [127.0.0.1:5000](127.0.0.1:5000) in a browser.
+Visit [localhost:5000](http://localhost:5000) in a browser.
