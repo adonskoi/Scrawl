@@ -9,17 +9,14 @@ Note-taking Software
 
 Installation:
 ``` shell
-git clone https://github.com/noooway/scrawl
-cd scrawl
+git clone https://github.com/abrdk/Scrawl
+cd Scrawl
 pip3 install -r requirements.txt
 ```
 
-For testing, start server with:
+Start the server:
 ``` shell
 flask run
 ```
 
-To make server visible to the outside world:
-``` shell
-flask run --host='0.0.0.0' --port='5000'
-```
+Visit [127.0.0.1:5000](127.0.0.1:5000) in a browser.
