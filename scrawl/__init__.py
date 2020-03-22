@@ -1,32 +1,30 @@
-import os
-
 from flask import Flask
-from . import pages
-from .settings import BASE_DIR
+from tinydb import TinyDB
 
+db = None
 
-def create_app(test_config=None):
+def create_app(config_filename=None):
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_mapping(
-        PAGES_PATH=os.path.join(BASE_DIR, 'instance', 'Pages'),  # todo: ask user for path
-        DEFAULT_TEXT='<div id="content">\n Scrawl! \n</div>',
-    )
-
-    if test_config is None:
-        app.config.from_pyfile('config.py', silent=True)
-    else:
-        app.config.from_mapping(test_config)
-
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
-
-    app.register_blueprint(pages.bp)
-    app.add_url_rule('/', endpoint='index')
-
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
-
+    if config_filename:
+        app.config.from_pyfile(config_filename)
+    global db
+    db = TinyDB(app.config.get('DB'))
+    register_blueprints(app)
+    create_simple_page()
     return app
+
+
+def register_blueprints(app):    
+    from . import views
+    app.register_blueprint(views.bp)
+
+
+def create_simple_page():
+    pages = db.table('pages')
+    pages_all = pages.all()
+    if len(pages_all) == 0:
+        _id = pages.insert({"page_name": "sample page name", "pid": 0, "content": "start typing here"})
+        pages.update({"_id": _id}, doc_ids=[_id])
+    else:
+        pass
+    
