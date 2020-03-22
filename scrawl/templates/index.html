@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Scrawl</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous"
+    />
+
+    <link rel= "stylesheet" type= "text/css"
+          href= "{{ url_for('static', filename='sidebar.css') }}">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link 
+      rel="stylesheet" 
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-treeview/1.2.0/bootstrap-treeview.min.css"
+      integrity="sha256-ULjuiZ9iqqf97EETp/mZrnLusfOwISiI6AIL0IXShbc=" 
+      crossorigin="anonymous" />
+    <script 
+      src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-treeview/1.2.0/bootstrap-treeview.min.js" 
+      integrity="sha256-rmZZb5ESAjCE4Al5RfENzQBpw1VbShzLes76aW8c+kc=" 
+      crossorigin="anonymous"></script> 
+  </head>
+  <body>
+    <div class="menu">
+      <ul class="menu-options">
+        <li class="menu-option context-new-page">New Page</li>
+        <li class="menu-option addition context-delete">
+          Delete
+        </li>
+        <li class="menu-option addition context-rename">
+          Rename
+        </li>
+      </ul>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-3">
+          <h3>Pages</h3>
+          <div id="tree"></div>
+        </div>
+        <div class="col-sm-9">
+          <h3 id="name"></h3>
+          <div id="content" contenteditable="true"></div>
+          <button type="button" id="save" class="btn btn-primary">Save</button>
+        </div>
+      </div>
+    </div>
+    <script>
+      function list_to_tree(list) {
+        var map = {},
+          node,
+          roots = [],
+          i;
+        for (i = 0; i < list.length; i += 1) {
+          map[list[i]._id] = i; // initialize the map
+          list[i].nodes = []; // initialize the children
+        }
+        for (i = 0; i < list.length; i += 1) {
+          node = list[i];
+          if (node.pid !== 0) {
+            list[map[node.pid]].nodes.push(node);
+          } else {
+            roots.push(node);
+          }
+        }
+        return roots;
+      }
+
+      function getTree() {
+        var tree = [];
+        $.get("/pages", function(data) {
+          data.forEach(el => {
+            el.text = el.page_name;
+          });
+          console.log(data);
+          tree = list_to_tree(data);
+        }).fail(function() {
+          alert("error to get pages");
+        });
+        return tree;
+      }
+      jQuery.ajaxSetup({ async: false });
+
+      function refresh() {
+        $("#tree").treeview({
+          data: getTree()
+        });
+
+        $("#tree").on("nodeSelected", function(event, data) {
+          $("#content").html(data.content);
+          $("#name").text(data.text);
+        });
+      }
+      $(document).ready(function() {
+        refresh();
+      });
+
+      document.getElementById("save").addEventListener("click", e => {
+        // var content = document.getElementById("content").innerHTML;
+        var content = $("#content").html();
+        var node = $("#tree").treeview("getSelected", {})[0];
+        node.content = content;
+        $.ajax(
+          `/pages/${node._id}`,
+          {
+            data: JSON.stringify({
+              page_name: node.text,
+              content: content
+            }),
+            contentType: "application/json",
+            type: "UPDATE"
+          },
+          function(data) {
+            console.log("end first");
+          }
+        ).fail(function() {
+          alert("error");
+        });
+      });
+
+      /* Context menu events */
+      const menu = document.querySelector(".menu");
+      let menuVisible = false;
+      // let addition_data = null;
+
+      const toggleMenu = command => {
+        menu.style.display = command === "show" ? "block" : "none";
+        menuVisible = !menuVisible;
+      };
+
+      const setPosition = ({ top, left }) => {
+        menu.style.left = `${left}px`;
+        menu.style.top = `${top}px`;
+        toggleMenu("show");
+      };
+
+      window.addEventListener("click", e => {
+        toggleMenu("hide");
+      });
+
+      window.addEventListener("contextmenu", e => {
+        e.preventDefault();
+        const origin = {
+          left: e.pageX,
+          top: e.pageY
+        };
+        setPosition(origin);
+        return false;
+      });
+
+      /* Event for context menu new page */
+      Array.from(document.getElementsByClassName("context-new-page")).forEach(
+        element => {
+          element.addEventListener("click", e => {
+            let page_name = prompt("Please enter new page name:");
+
+            if (page_name) {
+              var node = $("#tree").treeview("getSelected", {})[0];
+              console.log(node);
+              if (node) {
+                node.nodes.push({ text: page_name, nodes: [] });
+                var pid = node._id;
+              } else {
+                var pid = 0;
+              }
+              $.ajax("/pages", {
+                data: JSON.stringify({
+                  page_name: page_name,
+                  pid: pid
+                }),
+                contentType: "application/json",
+                type: "POST"
+              })
+                .done(function() {
+                  refresh();
+                  alert("page created");
+                })
+                .fail(function() {
+                  alert("error");
+                });
+            } else {
+              // alert('The creation of the page is canceled')
+            }
+          });
+        }
+      );
+
+      /* Event for context menu delete page */
+      Array.from(document.getElementsByClassName("context-delete")).forEach(
+        element => {
+          element.addEventListener("click", e => {
+            var node = $("#tree").treeview("getSelected", {})[0];
+            if (!node) {
+              alarm("node not selected");
+              return;
+            }
+            $.ajax(`/pages/${node._id}`, {
+              data: JSON.stringify({}),
+              contentType: "application/json",
+              type: "DELETE"
+            })
+              .done(function() {
+                refresh();
+                alert("page deleted");
+              })
+              .fail(function() {
+                alert("error");
+              });
+          });
+        }
+      );
+
+      /* Event for context menu rename page */
+      Array.from(document.getElementsByClassName("context-rename")).forEach(
+        element => {
+          element.addEventListener("click", e => {
+            var node = $("#tree").treeview("getSelected", {})[0];
+            var content = $("#content").html();
+            let new_page_name = prompt(
+              "Please enter new page name:",
+              node.text
+            );
+            if (!node) {
+              alarm("node not selected");
+              return;
+            }
+            $.ajax(`/pages/${node._id}`, {
+              data: JSON.stringify({
+                page_name: new_page_name,
+                content: content
+              }),
+              contentType: "application/json",
+              type: "UPDATE"
+            })
+              .done(function() {
+                refresh();
+                alert("page renamed");
+              })
+              .fail(function() {
+                alert("error");
+              });
+          });
+        }
+      );
+    </script>
+  </body>
+</html>
