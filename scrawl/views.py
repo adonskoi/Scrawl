@@ -23,7 +23,7 @@ def pages_post():
     pages = db.table('pages')
     pid = request.json['pid']
     _id = pages.insert({"page_name": request.json['page_name'], 
-                        "pid": pid, "content": "start typing here"})
+                        "pid": pid, "content": {}})
     pages.update({"_id": _id}, doc_ids=[_id])
     return jsonify({"success": True, "_id": _id})
 
