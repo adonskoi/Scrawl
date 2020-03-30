@@ -101,7 +101,7 @@
 
       function getTree() {
         var tree = [];
-        $.get("/pages", function(data) {
+        $.get("/api/pages", function(data) {
           data.forEach(el => {
             el.text = el.page_name;
           });
@@ -133,14 +133,14 @@
           var node = $("#tree").treeview("getNode", data.nodeId);
           node.content = content.ops;
           $.ajax(
-            `/pages/${_id}`,
+            `/api/pages/${_id}`,
             {
               data: JSON.stringify({
                 page_name: data.text,
                 content: content.ops
               }),
               contentType: "application/json",
-              type: "UPDATE"
+              type: "PATCH"
             },
             function(data) {
               console.log("end first");
@@ -200,7 +200,7 @@
               } else {
                 var pid = 0;
               }
-              $.ajax("/pages", {
+              $.ajax("/api/pages", {
                 data: JSON.stringify({
                   page_name: page_name,
                   pid: pid
@@ -231,7 +231,7 @@
               alarm("node not selected");
               return;
             }
-            $.ajax(`/pages/${node._id}`, {
+            $.ajax(`/api/pages/${node._id}`, {
               data: JSON.stringify({}),
               contentType: "application/json",
               type: "DELETE"
